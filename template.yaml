@@ -27,7 +27,11 @@ Resources:
             Bucket:
               Ref: InputImageBucket
             Events:
-              - 's3:ObjectCreated:*'
+              - 's3:ObjectCreated:*.png'
+              - 's3:ObjectCreated:*.jpeg'
+              - 's3:ObjectCreated:*.jpg'
+              - 's3:ObjectCreated:*.mp4'
+              - 's3:ObjectCreated:*.mov'
       Policies:
         - Version: '2012-10-17'
           Statement:

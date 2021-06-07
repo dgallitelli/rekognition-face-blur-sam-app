@@ -115,15 +115,21 @@ def lambda_handler(event, context):
             add_failed(bucket, error_message, failed_records, key)
             continue
 
-        # verify file size is < 15MB
-        if size > 15728640:
-            error_message = 'Maximum image size stored as an Amazon S3 object is limited to 15 MB for Amazon Rekognition.'
-            add_failed(bucket, error_message, failed_records, key)
-            continue
-
-        # verify file is JPEG or PNG
-        if local_filename.split('.')[-1] not in ['png', 'jpeg', 'jpg']:
-            error_message = 'Unsupported file type. Amazon Rekognition Image currently supports the JPEG and PNG image formats.'
+        # verify file and its size
+        if local_filename.split('.')[-1] in ['mp4', 'mov']:
+            file_type = 'video'
+            if size > 10*1024*1024*1024:
+                error_message = 'Maximum video size stored as an Amazon S3 object is limited to 10 GB for Amazon Rekognition Video.'
+                add_failed(bucket, error_message, failed_records, key)
+                continue
+        elif local_filename.split('.')[-1] not in ['png', 'jpeg', 'jpg']:
+            file_type = 'image'
+            if size > 15*1024*1024:
+                error_message = 'Maximum image size stored as an Amazon S3 object is limited to 15 MB for Amazon Rekognition Image.'
+                add_failed(bucket, error_message, failed_records, key)
+                continue
+        else:
+            error_message = 'Unsupported file type. Amazon Rekognition Image currently supports the JPEG and PNG image formats, and Video support MOV and MP4.'
             add_failed(bucket, error_message, failed_records, key)
             continue
 
